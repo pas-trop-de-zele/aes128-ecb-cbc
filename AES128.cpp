@@ -14,11 +14,11 @@ AES128::AES128(std::string key_)
     set_IV(std::vector<unsigned char>(16, 0));
 }
 
-void AES128::set_secret_message(std::string secret_message)
+void AES128::set_secret_message(std::string &secret_message_)
 {
     // NEED TO ENSURE MESSAGE NOT EMPTY
-    pad_pkcs(secret_message);
-    blockify(secret_message, encrypt_blocks);
+    pad_pkcs(secret_message_);
+    secret_message = secret_message_;
 }
 
 void AES128::pad_pkcs(std::string &message)
@@ -44,13 +44,14 @@ void AES128::set_IV(const std::vector<unsigned char> &IV_vals)
     }
 }
 
-void AES128::set_ciper_text(std::string ciper_text)
+void AES128::set_ciper_text(std::string ciper_text_)
 {
-    blockify(ciper_text, decrypt_blocks);
+    cipher_text = ciper_text_;
 }
 
 void AES128::encrypt(std::string encrypt_mode)
 {
+    blockify(secret_message, encrypt_blocks);
     // Need to lower case all input
     if (encrypt_mode == "ecb")
     {
@@ -120,6 +121,7 @@ void AES128::encrypt_cbc()
 
 void AES128::decrypt(std::string decrypt_mode)
 {
+    blockify(cipher_text, decrypt_blocks);
     if (decrypt_mode == "ecb")
     {
         decrypt_ecb();
@@ -197,11 +199,16 @@ void AES128::decrypt_cbc()
 
 void AES128::blockify(std::string secret, std::vector<KeyBlock *> &block_container)
 {
-    // NEED TO ENSURE INDEX NOT OUT OF BOUND
+    int blocks_count = secret.size() / 16;
+    ensure_enough_blocks(encrypt_blocks, blocks_count);
+
+    for (KeyBlock *block : encrypt_blocks)
+    {
+        block->clear();
+    }
 
     for (int i = 0; i < secret.size();)
     {
-        block_container.push_back(new KeyBlock());
         int block_no = i / 16;
         for (int col = 0; col < 4; ++col)
         {
@@ -213,12 +220,30 @@ void AES128::blockify(std::string secret, std::vector<KeyBlock *> &block_contain
     }
 }
 
-void AES128::show_encrypted_blocks()
+void AES128::ensure_enough_blocks(std::vector<KeyBlock *> &block_container, int blocks_needed)
 {
+    while (blocks_needed != block_container.size())
+    {
+        if (block_container.size() < blocks_needed)
+        {
+            block_container.push_back(new KeyBlock());
+        }
+        else
+        {
+            delete block_container.back();
+            block_container.pop_back();
+        }
+    }
+}
+
+std::string AES128::show_encrypted_blocks()
+{
+    std::stringstream ss;
     for (auto block : encrypt_blocks)
     {
-        std::cout << *block << "\n";
+        ss << *block << "\n";
     }
+    return ss.str();
 }
 
 std::string AES128::show_encrypted_message()
