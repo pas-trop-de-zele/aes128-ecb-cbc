@@ -16,6 +16,7 @@ public:
     virtual int get(int row, int col) const;
     virtual void set(int row, int col, int val);
     Block(const Block &source);
+    void clear();
 };
 
 #endif

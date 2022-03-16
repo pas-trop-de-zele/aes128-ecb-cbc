@@ -24,6 +24,17 @@ Block::Block(const Block &source)
     }
 }
 
+void Block::clear()
+{
+    for (int row = 0; row < 4; ++row)
+    {
+        for (int col = 0; col < 4; ++col)
+        {
+            data[row][col] = 0;
+        }
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, const Block &block)
 {
     for (int row = 0; row < 4; ++row)
