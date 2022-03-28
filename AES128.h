@@ -18,6 +18,8 @@ private:
     KeyBlock *IV;
     std::string secret_message;
     std::string cipher_text;
+    void encrypt_ecb();
+    void encrypt_cbc();
 
 public:
     AES128(std::string key_);
@@ -26,8 +28,6 @@ public:
     void set_IV(const std::vector<unsigned char> &IV_vals);
     void set_ciper_text(std::string ciper_text_);
     void encrypt(std::string encrypt_mode);
-    void encrypt_ecb();
-    void encrypt_cbc();
     void decrypt(std::string decrypt_mode);
     void decrypt_ecb();
     void decrypt_cbc();
