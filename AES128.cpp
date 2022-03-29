@@ -200,9 +200,9 @@ void AES128::decrypt_cbc()
 void AES128::blockify(std::string secret, std::vector<KeyBlock *> &block_container)
 {
     int blocks_count = secret.size() / 16;
-    ensure_enough_blocks(encrypt_blocks, blocks_count);
+    ensure_enough_blocks(block_container, blocks_count);
 
-    for (KeyBlock *block : encrypt_blocks)
+    for (KeyBlock *block : block_container)
     {
         block->clear();
     }
